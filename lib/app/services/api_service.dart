@@ -1,6 +1,6 @@
+import 'dart:collection';
 import 'dart:convert';
 
-import 'package:flutter/foundation.dart';
 import 'package:http/http.dart' as http;
 import 'package:covid_tracker/app/services/api.dart';
 
@@ -8,53 +8,24 @@ class APIService {
   APIService(this.api);
   final API api;
 
-  Future<String> getAccessToken() async {
-    final response = await http.post(
-      api.tokenUri().toString(),
-      headers: {'Authorization': 'Basic ${api.apiKey}'},
-    );
-    if (response.statusCode == 200) {
-      final data = json.decode(response.body);
-      final accessToken = data['access_token'];
-      if (accessToken != null) {
-        return accessToken;
-      }
-    }
-    print(
-        'Request ${api.tokenUri()} failed\nResponse: ${response.statusCode} ${response.reasonPhrase}');
-    throw response;
-  }
+  HashMap<String, String> responseMap = new HashMap<String, String>();
 
-  Future<int> getEndpointData({
-    @required String accessToken,
-    @required Endpoint endpoint,
-  }) async {
-    final uri = api.endpointUri(endpoint);
+  Future<HashMap<String, String>> getEndpointData() async {
+    final uri = api.endpointUri();
+    print(uri);
     final response = await http.get(
       uri.toString(),
-      headers: {'Authorization': 'Bearer $accessToken'},
+      headers: {'Accept': 'application/json'},
     );
     if (response.statusCode == 200) {
-      final List<dynamic> data = json.decode(response.body);
-      if (data.isNotEmpty) {
-        final Map<String, dynamic> endpointData = data[0];
-        final String responseJsonKey = _responseJsonKeys[endpoint];
-        final int result = endpointData[responseJsonKey];
-        if (result != null) {
-          return result;
-        }
-      }
+      responseMap['Confirmed']=json.decode(response.body)["confirmed"]["value"].toString();
+      responseMap['Recovered']=json.decode(response.body)["recovered"]["value"].toString();
+      responseMap['Deaths']=json.decode(response.body)["deaths"]["value"].toString();
+      responseMap['LastUpdate']=json.decode(response.body)["lastUpdate"];
+      return responseMap;
     }
     print(
         'Request $uri failed\nResponse: ${response.statusCode} ${response.reasonPhrase}');
     throw response;
   }
-
-  static Map<Endpoint, String> _responseJsonKeys = {
-    Endpoint.cases: 'cases',
-    Endpoint.casesSuspected: 'data',
-    Endpoint.casesConfirmed: 'data',
-    Endpoint.deaths: 'data',
-    Endpoint.recovered: 'data',
-  };
 }

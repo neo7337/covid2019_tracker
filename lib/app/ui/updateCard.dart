@@ -1,13 +1,13 @@
 import 'package:flutter/material.dart';
 
-class EndpointCard extends StatelessWidget {
-  const EndpointCard({Key key, this.label, this.value}) : super(key: key);
+class UpdateCard extends StatelessWidget {
+  const UpdateCard({Key key, this.label, this.value}) : super(key: key);
   final String value;
   final String label;
 
   @override
   Widget build(BuildContext context) {
-    return  Padding(
+    return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 4.0),
       child: Card(
         child: Padding(
@@ -21,12 +21,12 @@ class EndpointCard extends StatelessWidget {
               ),
               Text(
                 value != null ? value.toString() : '',
-                style: Theme.of(context).textTheme.display1,
+                style: Theme.of(context).textTheme.headline,
               ),
             ],
           ),
         ),
-      )
+      ),
     );
   }
 }
