@@ -29,3 +29,11 @@ Authorization: Bearer {{accessToken}}
 ###
 GET https://covid19.mathdro.id/api
 Accept: application/json
+
+###
+GET https://covid19.mathdro.id/api/countries
+Accept: application/json
+
+###
+GET https://covid19.mathdro.id/api/countries/IN
+Accept: application/json

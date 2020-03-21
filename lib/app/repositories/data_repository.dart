@@ -19,4 +19,28 @@ class DataRepository {
       rethrow;
     }
   }
+
+  Future<List<String>> getCountries() async {
+    try{
+      return await apiService.getCountries();
+    } on Response catch (response) {
+      if(response.statusCode == 401 ){
+        return await apiService.getCountries();
+      }
+      rethrow;
+    }
+  }
+
+  Future<HashMap<String, String>> getCountryInfo(String country) async {
+    try{
+      print('calling getCountryInfo datarepository ' + country);
+      return await apiService.getCountryInfo(country);
+    } on Response catch (response) {
+      if(response.statusCode == 401 ){
+        return await apiService.getCountryInfo(country);
+      }
+      rethrow;
+    }
+  }
+
 }

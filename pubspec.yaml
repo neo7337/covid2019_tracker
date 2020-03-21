@@ -22,6 +22,9 @@ dependencies:
   http: 0.12.0+4
   provider: ^4.0.4
   flutter_launcher_icons: "^0.6.1"
+  timezone: ^0.5.6
+  flutter_picker:
+    git: git://github.com/yangyxd/flutter_picker.git
 
 flutter_icons:
   image_path: "icon/logo.png" 

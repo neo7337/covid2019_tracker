@@ -9,6 +9,7 @@ class APIService {
   final API api;
 
   HashMap<String, String> responseMap = new HashMap<String, String>();
+  List<String> countriesMap = new List<String>();
 
   Future<HashMap<String, String>> getEndpointData() async {
     final uri = api.endpointUri();
@@ -26,6 +27,40 @@ class APIService {
     }
     print(
         'Request $uri failed\nResponse: ${response.statusCode} ${response.reasonPhrase}');
+    throw response;
+  }
+
+  Future<HashMap<String, String>> getCountryInfo(String country) async {
+    final uri = api.countryInfoUri(country);
+    print(uri);
+    final response = await http.get(
+      uri.toString(),
+      headers: {'Accept': 'application/json'}
+    );
+    if(response.statusCode == 200){
+      print('country info '+ json.decode(response.body).toString());
+      responseMap['Confirmed']=json.decode(response.body)["confirmed"]["value"].toString();
+      responseMap['Recovered']=json.decode(response.body)["recovered"]["value"].toString();
+      responseMap['Deaths']=json.decode(response.body)["deaths"]["value"].toString();
+      responseMap['LastUpdate']=json.decode(response.body)["lastUpdate"];
+      return responseMap;
+    }
+    print(
+        'Request $uri failed\nResponse: ${response.statusCode} ${response.reasonPhrase}');
+    throw response;
+  }
+
+  Future<List<String>> getCountries() async {
+    final uri = api.countriesUri();
+    print(uri);
+    final response = await http.get(uri.toString(), headers: {'Accept': 'application/json'});
+    if(response.statusCode == 200 ){
+      print('Countries List fetched');
+      print(json.decode(response.body));
+      return countriesMap;
+    }
+    print(
+        'Countries Request $uri failed\nResponse: ${response.statusCode} ${response.reasonPhrase}');
     throw response;
   }
 }
