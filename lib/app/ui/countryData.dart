@@ -27,29 +27,36 @@ class _CountryDataStatefulWidget extends State<CountryData> {
   
   @override
   void initState() {
-    super.initState();
     _setData();
-    _updateInfo();
+    super.initState();    
   }
 
   void updateData(String input) {
     print('calling update data ' + input);
     _fetchInfo(input);
+    //_updateInfo();
   }
 
   void _updateInfo() {
-    setState(() => _confirmedValue = _confirmedCases);
-    setState(() => _deathValue = _deaths);
-    setState(() => _recoveredValue = _recovered);
+    //if(this.mounted){
+      print('inside updateinfo coutnry data');
+      setState(() => _confirmedValue = _confirmedCases);
+      setState(() => _deathValue = _deaths);
+      setState(() => _recoveredValue = _recovered);
+    //}
   }
 
   Future<void> _fetchInfo(String input) async {
     print('calling _fetchInfo ' + input);
     final responseMap = await dataRepository.DataRepository(apiService: apiService.APIService(api.API(apiKey: null))).getCountryInfo(input);
     print('country info CountryData.dart' + responseMap.toString());
-    setState(() => _confirmedCases = responseMap['Confirmed']);
-    setState(() => _deaths = responseMap['Deaths']);
-    setState(() => _recovered = responseMap['Recovered']);
+    _confirmedCases = responseMap['Confirmed'];
+    _deaths = responseMap['Deaths'];
+    _recovered = responseMap['Recovered'];
+    setState(() => _confirmedValue = _confirmedCases);
+      setState(() => _deathValue = _deaths);
+      setState(() => _recoveredValue = _recovered);
+    //_updateInfo();
   }
 
   void _setData() {

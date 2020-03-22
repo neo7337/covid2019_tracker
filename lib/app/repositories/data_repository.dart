@@ -20,7 +20,7 @@ class DataRepository {
     }
   }
 
-  Future<List<String>> getCountries() async {
+  Future<HashMap<String, String>> getCountries() async {
     try{
       return await apiService.getCountries();
     } on Response catch (response) {

@@ -1,5 +1,9 @@
+import 'dart:collection';
+
+import 'package:covid_tracker/app/repositories/data_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:covid_tracker/app/ui/countryData.dart' as countryData;
+import 'package:provider/provider.dart';
 
 class CountryPicker extends StatefulWidget {
   
@@ -10,11 +14,22 @@ class CountryPicker extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<CountryPicker> {
-  String dropdownValue = 'USA';
-
+  String dropdownValue = 'IN';
+  HashMap<String, String> countriesList = new HashMap<String, String>();
+  HashMap<String, String> _countriesList = new HashMap<String, String>();
   @override
   void initState() {
     super.initState();
+    _updateData();
+  }
+
+  Future<void> _updateData() async {
+    final dataRepository = Provider.of<DataRepository>(context, listen: false);
+    final countriesList = await dataRepository.getCountries();
+    //print(countriesList.toString());
+    setState(() {
+      _countriesList = countriesList;
+    });
   }
 
   @override
@@ -34,16 +49,20 @@ class _MyStatefulWidgetState extends State<CountryPicker> {
         onChanged: (String newValue) {
           setState(() {
             dropdownValue = newValue;
-            countryData.CountryData().updateData(dropdownValue);
           });
+          countryData.CountryData().updateData(dropdownValue);
         },
-        items: <String>['USA', 'IN']
-            .map<DropdownMenuItem<String>>((String value) {
-          return DropdownMenuItem<String>(
-            value: value,
-            child: Text(value),
-          );
-        }).toList(),
+        items: _countriesList
+            .map((description, value) {
+                return MapEntry(
+                    description,
+                    DropdownMenuItem<String>(
+                      value: value,
+                      child: Text(description + '('+value+')'),
+                    ));
+              })
+              .values
+              .toList(),
       ),
     );
   }

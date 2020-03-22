@@ -10,6 +10,7 @@ class APIService {
 
   HashMap<String, String> responseMap = new HashMap<String, String>();
   List<String> countriesMap = new List<String>();
+  HashMap<String, String> countriesList = new HashMap<String, String>();
 
   Future<HashMap<String, String>> getEndpointData() async {
     final uri = api.endpointUri();
@@ -50,14 +51,19 @@ class APIService {
     throw response;
   }
 
-  Future<List<String>> getCountries() async {
+  Future<HashMap<String, String>> getCountries() async {
     final uri = api.countriesUri();
     print(uri);
     final response = await http.get(uri.toString(), headers: {'Accept': 'application/json'});
     if(response.statusCode == 200 ){
       print('Countries List fetched');
-      print(json.decode(response.body));
-      return countriesMap;
+      //print(json.decode(response.body)['countries']);
+      final inputJSON = json.decode(response.body)['countries'];
+      inputJSON.forEach((final String key, final value) {
+        //print('"Key: {{$key}} -> value: $value"');
+        countriesList[key] = value;
+      });
+      return countriesList;
     }
     print(
         'Countries Request $uri failed\nResponse: ${response.statusCode} ${response.reasonPhrase}');
