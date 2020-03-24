@@ -14,7 +14,7 @@ class CountryPicker extends StatefulWidget {
 }
 
 class _MyStatefulWidgetState extends State<CountryPicker> {
-  String dropdownValue = 'IN';
+  String dropdownValue = 'IND';
   HashMap<String, String> countriesList = new HashMap<String, String>();
   HashMap<String, String> _countriesList = new HashMap<String, String>();
   @override
@@ -26,7 +26,7 @@ class _MyStatefulWidgetState extends State<CountryPicker> {
   Future<void> _updateData() async {
     final dataRepository = Provider.of<DataRepository>(context, listen: false);
     final countriesList = await dataRepository.getCountries();
-    //print(countriesList.toString());
+    //print('print'+countriesList.toString());
     setState(() {
       _countriesList = countriesList;
     });
@@ -58,7 +58,7 @@ class _MyStatefulWidgetState extends State<CountryPicker> {
                     description,
                     DropdownMenuItem<String>(
                       value: value,
-                      child: Text(description + '('+value+')'),
+                      child: Text(description + ' ('+value+')'),
                     ));
               })
               .values

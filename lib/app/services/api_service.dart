@@ -4,6 +4,12 @@ import 'dart:convert';
 import 'package:http/http.dart' as http;
 import 'package:covid_tracker/app/services/api.dart';
 
+class Countries {
+  final String name;
+  final String iso3;
+  Countries(this.name, this.iso3);
+}
+
 class APIService {
   APIService(this.api);
   final API api;
@@ -57,16 +63,27 @@ class APIService {
     final response = await http.get(uri.toString(), headers: {'Accept': 'application/json'});
     if(response.statusCode == 200 ){
       print('Countries List fetched');
-      //print(json.decode(response.body)['countries']);
-      final inputJSON = json.decode(response.body)['countries'];
-      inputJSON.forEach((final String key, final value) {
-        //print('"Key: {{$key}} -> value: $value"');
-        countriesList[key] = value;
+      Map<String, dynamic> decodedMap = jsonDecode(response.body);
+      List<dynamic> dynamicList = decodedMap['countries'];
+      List<Countries> countries = new List<Countries>();
+      dynamicList.forEach((f) {
+        Countries s = APIService.fromJsonMap(f);
+        countries.add(s);
+      });
+      countries.forEach( (val) => {
+        countriesList[val.name.toString()]=val.iso3.toString()
       });
       return countriesList;
     }
     print(
         'Countries Request $uri failed\nResponse: ${response.statusCode} ${response.reasonPhrase}');
     throw response;
+  }
+
+  static Countries fromJsonMap(Map<String, dynamic> json) {
+    String name = json['name'];
+    String iso3 = json['iso3'];
+    Countries s = new Countries(name, iso3);
+    return s;
   }
 }
