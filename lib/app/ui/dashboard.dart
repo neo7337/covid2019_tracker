@@ -2,7 +2,6 @@ import 'dart:collection';
 
 import 'package:covid_tracker/app/repositories/data_repository.dart';
 import 'package:covid_tracker/app/ui/countryData.dart';
-import 'package:covid_tracker/app/ui/countryPicker.dart';
 import 'package:covid_tracker/app/ui/endpoint_card.dart';
 import 'package:covid_tracker/app/ui/updateCard.dart';
 import 'package:flutter/material.dart';
@@ -65,7 +64,6 @@ class _DashboardState extends State<Dashboard> {
               label: 'Select Country to see detailed Data',
               value: ''
             ),
-            CountryPicker(),
             CountryData()
           ],
         ),

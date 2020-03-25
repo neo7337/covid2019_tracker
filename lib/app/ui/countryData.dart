@@ -1,62 +1,60 @@
 import 'dart:collection';
 
-import 'package:covid_tracker/app/repositories/data_repository.dart' as dataRepository;
-import 'package:covid_tracker/app/services/api_service.dart' as apiService;
-import 'package:covid_tracker/app/services/api.dart' as api;
+import 'package:covid_tracker/app/repositories/data_repository.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/rendering.dart';
+import 'package:provider/provider.dart';
 
 class CountryData extends StatefulWidget {
   CountryData({Key key}) : super(key : key);
 
-  final _CountryDataStatefulWidget obj = new _CountryDataStatefulWidget();
-  
   @override
   _CountryDataStatefulWidget createState() => _CountryDataStatefulWidget();
 
-  void updateData(String input) {
-    obj.updateData(input);
-  }
 }
 
 class _CountryDataStatefulWidget extends State<CountryData> {
 
-  String _confirmedLabel, _recoveredLabel, _deathLabel, _confirmedValue, _recoveredValue, _deathValue;
-  HashMap<String, String> responseMap = new HashMap<String, String>();
-  String _confirmedCases, _deaths, _recovered;
+  String _confirmedLabel, _recoveredLabel, _deathLabel;
+  String confirmed = '0', recovered = '0', death = '0';
+
+  String dropdownValue = 'IND';
+  HashMap<String, String> countriesList = new HashMap<String, String>();
+  HashMap<String, String> _countriesList = new HashMap<String, String>();
   
   @override
   void initState() {
     _setData();
+    _updateData();
     super.initState();    
   }
 
-  void updateData(String input) {
-    print('calling update data ' + input);
-    _fetchInfo(input);
-    //_updateInfo();
+  Future<void> _updateData() async {
+    final dataRepository = Provider.of<DataRepository>(context, listen: false);
+    final countriesList = await dataRepository.getCountries();
+    //print('print'+countriesList.toString());
+    setState(() {
+      _countriesList = countriesList;
+    });
   }
 
-  void _updateInfo() {
-    //if(this.mounted){
-      print('inside updateinfo coutnry data');
-      setState(() => _confirmedValue = _confirmedCases);
-      setState(() => _deathValue = _deaths);
-      setState(() => _recoveredValue = _recovered);
-    //}
-  }
-
-  Future<void> _fetchInfo(String input) async {
-    print('calling _fetchInfo ' + input);
-    final responseMap = await dataRepository.DataRepository(apiService: apiService.APIService(api.API(apiKey: null))).getCountryInfo(input);
+  Future<void> fetchCountryData(String input) async {
+    final dataRepository = Provider.of<DataRepository>(context, listen: false);
+    final responseMap = await dataRepository.getCountryInfo(input);
     print('country info CountryData.dart' + responseMap.toString());
-    _confirmedCases = responseMap['Confirmed'];
-    _deaths = responseMap['Deaths'];
-    _recovered = responseMap['Recovered'];
-    setState(() => _confirmedValue = _confirmedCases);
-      setState(() => _deathValue = _deaths);
-      setState(() => _recoveredValue = _recovered);
-    //_updateInfo();
+    //final obj = new ComplexValueNotifier();
+    //obj.setCountryData('hello');
+    if(responseMap != null) {
+      setState(() {
+        confirmed = responseMap['Confirmed'];
+      });
+      setState(() {
+        recovered = responseMap['Recovered'];
+      });
+      setState(() {
+        death = responseMap['Deaths'];
+      });
+    }
   }
 
   void _setData() {
@@ -69,9 +67,6 @@ class _CountryDataStatefulWidget extends State<CountryData> {
     setState(() {
       _deathLabel = 'Deaths';
     });
-    setState(() => _confirmedValue = '0');
-    setState(() => _deathValue = '0');
-    setState(() => _recoveredValue = '0');
   }
 
   @override
@@ -84,15 +79,52 @@ class _CountryDataStatefulWidget extends State<CountryData> {
           child: Column(
             children: <Widget>[
               Row(
+                mainAxisAlignment: MainAxisAlignment.center,
+                children: <Widget>[
+                  Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                    child: DropdownButton<String>(
+                      value: dropdownValue,
+                      icon: Icon(Icons.arrow_downward),
+                      iconSize: 24,
+                      elevation: 16,
+                      style: TextStyle(color: Colors.white),
+                      underline: Container(
+                        height: 2,
+                        color: Colors.black,
+                      ),
+                      onChanged: (String newValue) {
+                        setState(() {
+                          dropdownValue = newValue;
+                        });
+                        fetchCountryData(dropdownValue);
+                      },
+                      items: _countriesList
+                          .map((description, value) {
+                              return MapEntry(
+                                  description,
+                                  DropdownMenuItem<String>(
+                                    value: value,
+                                    child: Text(description + ' ('+value+')'),
+                                  ));
+                            })
+                            .values
+                            .toList(),
+                    ),
+                  )
+                ],
+              ),
+              Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: <Widget>[Text(
                   _confirmedLabel,
                   style: Theme.of(context).textTheme.headline,
                 ),
                 Text(
-                  _confirmedValue != null ? _confirmedValue.toString() : '',
+                  confirmed,
                   style: Theme.of(context).textTheme.display1,
-                ),],
+                ),
+                ],
               ),
               Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -101,7 +133,7 @@ class _CountryDataStatefulWidget extends State<CountryData> {
                   style: Theme.of(context).textTheme.headline,
                 ),
                 Text(
-                  _recoveredValue != null ? _recoveredValue.toString() : '',
+                  recovered,
                   style: Theme.of(context).textTheme.display1,
                 ),],
               ),
@@ -112,7 +144,7 @@ class _CountryDataStatefulWidget extends State<CountryData> {
                   style: Theme.of(context).textTheme.headline,
                 ),
                 Text(
-                  _deathValue != null ? _deathValue.toString() : '',
+                  death,
                   style: Theme.of(context).textTheme.display1,
                 ),],
               ),

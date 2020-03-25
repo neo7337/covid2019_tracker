@@ -71,7 +71,8 @@ class APIService {
         countries.add(s);
       });
       countries.forEach( (val) => {
-        countriesList[val.name.toString()]=val.iso3.toString()
+        if(val.iso3 != null)
+          countriesList[val.name.toString()]=val.iso3.toString()
       });
       return countriesList;
     }
