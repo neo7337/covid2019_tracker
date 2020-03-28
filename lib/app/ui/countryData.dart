@@ -81,36 +81,40 @@ class _CountryDataStatefulWidget extends State<CountryData> {
               Row(
                 mainAxisAlignment: MainAxisAlignment.center,
                 children: <Widget>[
-                  Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
-                    child: DropdownButton<String>(
-                      value: dropdownValue,
-                      icon: Icon(Icons.arrow_downward),
-                      iconSize: 24,
-                      elevation: 16,
-                      style: TextStyle(color: Colors.white),
-                      underline: Container(
-                        height: 2,
-                        color: Colors.black,
+                  Container(
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(15.0),
+                      border: Border.all(
+                          color: Colors.black, style: BorderStyle.solid, width: 0.80
+                        )
                       ),
-                      onChanged: (String newValue) {
-                        setState(() {
-                          dropdownValue = newValue;
-                        });
-                        fetchCountryData(dropdownValue);
-                      },
-                      items: _countriesList
-                          .map((description, value) {
-                              return MapEntry(
-                                  description,
-                                  DropdownMenuItem<String>(
-                                    value: value,
-                                    child: Text(description + ' ('+value+')'),
-                                  ));
-                            })
-                            .values
-                            .toList(),
-                    ),
+                    child: Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 8.0, vertical: 8.0),
+                      child: DropdownButton<String>(
+                        value: dropdownValue,
+                        icon: Icon(Icons.arrow_downward),
+                        iconSize: 24,
+                        elevation: 16,
+                        style: TextStyle(color: Colors.white),
+                        onChanged: (String newValue) {
+                          setState(() {
+                            dropdownValue = newValue;
+                          });
+                          fetchCountryData(dropdownValue);
+                        },
+                        items: _countriesList
+                            .map((description, value) {
+                                return MapEntry(
+                                    description,
+                                    DropdownMenuItem<String>(
+                                      value: value,
+                                      child: Text(description + ' ('+value+')'),
+                                    ));
+                              })
+                              .values
+                              .toList(),
+                      ),
+                    )
                   )
                 ],
               ),
